@@ -43,7 +43,7 @@
 				// *** functionality
 				cancelSelection  : true,       // prevent text selection in the header
 				tabIndex         : true,       // add tabindex to header for keyboard accessibility
-				dateFormat       : 'mmddyyyy', // other options: 'ddmmyyy' or 'yyyymmdd'
+				dateFormat       : 'mmddyyyy', // other options: 'ddmmyyy' or 'yyyymmdd' or 'iso8601'
 				sortMultiSortKey : 'shiftKey', // key used to select additional columns
 				sortResetKey     : 'ctrlKey',  // key used to remove sorting on a column
 				usNumberFormat   : true,       // false for German '1.234.567,89' or French '1 234 567,89'
@@ -2244,6 +2244,7 @@
 	// XXY covers MDY & DMY formats
 	ts.regex.shortDateXXY = /(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/;
 	ts.regex.shortDateYMD = /(\d{4})[\/\s](\d{1,2})[\/\s](\d{1,2})/;
+	ts.regex.shortDateISO = /^(\d{4})[\/\s](\d{1,2})[\/\s](\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,}\/*\d*)$/;
 	ts.addParser({
 		id: 'shortDate', // 'mmddyyyy', 'ddmmyyyy' or 'yyyymmdd'
 		is: function(s) {
@@ -2265,6 +2266,9 @@
 					d = d.replace(ts.regex.shortDateXXY, '$3/$2/$1');
 				} else if (format === 'yyyymmdd') {
 					d = d.replace(ts.regex.shortDateYMD, '$1/$2/$3');
+				} else if (format === 'iso8601') {
+					d = d.replace(ts.regex.shortDateISO, '$1-$2-$3 $4:$5:$6');
+					d = d.replace(/\//, '.');
 				}
 				date = new Date(d);
 				return date instanceof Date && isFinite(date) ? date.getTime() : s;
